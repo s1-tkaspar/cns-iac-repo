@@ -51,6 +51,12 @@ jobs:
       - name: IaC Scan Commenter
         if: steps.iac-scanner.outcome == 'failure'
         run: gh pr comment ${{ github.event.pull_request.number }} --body "Secrets Detected.  Check GitHub Actions 'Run IaC Scanner' Output."
+
+      - name: CNS Status Logger
+        run: |
+          OUTPUT="${{ steps.secret-detector.outcome }} ${{ steps.iac-scanner.outcome }}"
+          gh pr comment ${{ github.event.pull_request.number }} --body "$OUTPUT"
+
       
 
       - name: Check for failures
