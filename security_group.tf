@@ -1,6 +1,8 @@
 resource "aws_security_group" "demo_sg" {
   vpc_id = aws_vpc.demo_vpc.id
 
+  region = "us-east-1"
+
   egress {
     from_port   = 0
     to_port     = 0

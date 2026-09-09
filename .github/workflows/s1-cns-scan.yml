@@ -14,7 +14,7 @@ jobs:
       options: --entrypoint ""
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ github.ref }}
           fetch-depth: 0
@@ -36,13 +36,25 @@ jobs:
           REPO_URL: ${{ github.server_url }}
 
       - name: Run IaC Scanner
-        run:  s1-cns-cli scan iac -d $PWD --publish-result --repo-full-name $REPO_FULL_NAME  --repo-url $REPO_URL/$REPO_FULL_NAME --branch $BRANCH --provider GITHUB
+        shell: bash
+        run:  |
+              s1-cns-cli scan iac -d $PWD --publish-result --repo-full-name $REPO_FULL_NAME  --repo-url $REPO_URL/$REPO_FULL_NAME --branch $BRANCH --provider GITHUB > iac_scan.out 2>&1
+              cat iac_scan.out
+              SCAN_OUTPUT=$(cat iac_scan.out | grep "RESULT")
+              echo "scan_output=${SCAN_OUTPUT}" >> $GITHUB_OUTPUT
         id: iac-scanner
         continue-on-error: true
         env:
           REPO_FULL_NAME: ${{ github.repository }}
           REPO_URL: ${{ github.server_url }}
           BRANCH: ${{ github.event.pull_request.head.ref }}
+
+
+      - name: IaC Scan Echoer
+        shell: bash
+        run: |
+             RESULT="${{ steps.iac-scanner.outputs.scan_output }}"
+             echo "${RESULT}"
 
       - name: Check for failures
         if: steps.secret-detector.outcome == 'failure' || steps.iac-scanner.outcome == 'failure'
