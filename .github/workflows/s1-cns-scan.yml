@@ -44,20 +44,9 @@ jobs:
           REPO_URL: ${{ github.server_url }}
           BRANCH: ${{ github.event.pull_request.head.ref }}
 
-      - name: Secret Scan Commenter
-        if: steps.secret-detector.outcome == 'failure'
-        run: gh pr comment ${{ github.event.pull_request.number }} --body "Secrets Detected.  Check GitHub Actions 'Run Secret Detector' Output."
 
-      - name: IaC Scan Commenter
-        if: steps.iac-scanner.outcome == 'failure'
-        run: gh pr comment ${{ github.event.pull_request.number }} --body "Secrets Detected.  Check GitHub Actions 'Run IaC Scanner' Output."
-
-      - name: CNS Status Logger
-        run: |
-          OUTPUT="${{ steps.secret-detector.outcome }} ${{ steps.iac-scanner.outcome }}"
-          gh pr comment ${{ github.event.pull_request.number }} --body "$OUTPUT"
-
-      
+      - name: IaC Scan Echoer
+        run: echo ${{ steps.iac-scanner.output }}
 
       - name: Check for failures
         if: steps.secret-detector.outcome == 'failure' || steps.iac-scanner.outcome == 'failure'
