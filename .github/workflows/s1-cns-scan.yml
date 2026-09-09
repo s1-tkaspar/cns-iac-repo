@@ -36,6 +36,7 @@ jobs:
           REPO_URL: ${{ github.server_url }}
 
       - name: Run IaC Scanner
+        shell: bash
         run:  |
               s1-cns-cli scan iac -d $PWD --publish-result --repo-full-name $REPO_FULL_NAME  --repo-url $REPO_URL/$REPO_FULL_NAME --branch $BRANCH --provider GITHUB > iac_scan.out 2>&1
               cat iac_scan.out
@@ -50,8 +51,9 @@ jobs:
 
 
       - name: IaC Scan Echoer
+        shell: bash
         run: |
-             RESULT="$(echo ${{ steps.iac-scanner.outputs.scan_output }} | grep "RESULT")"
+             RESULT=${{ steps.iac-scanner.outputs.scan_output }}
              echo "${RESULT}"
 
       - name: Check for failures
