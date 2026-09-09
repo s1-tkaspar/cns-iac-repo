@@ -37,12 +37,10 @@ jobs:
 
       - name: Run IaC Scanner
         run:  |
-              SCAN_OUTPUT=$(s1-cns-cli scan iac -d $PWD --publish-result --repo-full-name $REPO_FULL_NAME  --repo-url $REPO_URL/$REPO_FULL_NAME --branch $BRANCH --provider GITHUB 2>&1)
-              echo "$SCAN_OUTPUT"
-              delimiter="$(openssl rand -hex 8)"
-              echo "scan_output<<$delimiter" >> $GITHUB_OUTPUT
-              echo "$SCAN_OUTPUT" >> $GITHUB_OUTPUT
-              echo "$delimiter" >> $GITHUB_OUTPUT
+              s1-cns-cli scan iac -d $PWD --publish-result --repo-full-name $REPO_FULL_NAME  --repo-url $REPO_URL/$REPO_FULL_NAME --branch $BRANCH --provider GITHUB > iac_scan.out 2>&1
+              cat iac_scan.out
+              SCAN_OUTPUT=$(cat iac_scan.out | grep "RESULT")
+              echo "scan_output=${SCAN_OUTPUT}" >> $GITHUB_OUTPUT
         id: iac-scanner
         continue-on-error: true
         env:
