@@ -52,7 +52,9 @@ jobs:
 
 
       - name: IaC Scan Echoer
-        run: echo ${{ steps.iac-scanner.outputs.scan_output }}
+        run: |
+             RESULT="$(echo ${{ steps.iac-scanner.outputs.scan_output }} | grep "RESULT")"
+             echo "${RESULT}"
 
       - name: Check for failures
         if: steps.secret-detector.outcome == 'failure' || steps.iac-scanner.outcome == 'failure'
