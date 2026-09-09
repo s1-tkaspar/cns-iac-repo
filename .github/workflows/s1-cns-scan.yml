@@ -37,7 +37,7 @@ jobs:
 
       - name: Run IaC Scanner
         run:  |
-              s1-cns-cli scan iac -d $PWD --publish-result --repo-full-name $REPO_FULL_NAME  --repo-url $REPO_URL/$REPO_FULL_NAME --branch $BRANCH --provider GITHUB 1>SCAN_OUTPUT
+              SCAN_OUTPUT=$(s1-cns-cli scan iac -d $PWD --publish-result --repo-full-name $REPO_FULL_NAME  --repo-url $REPO_URL/$REPO_FULL_NAME --branch $BRANCH --provider GITHUB 2>&1)
               echo $SCAN_OUTPUT
               echo "scan_output=$SCAN_OUTPUT" >> $GITHUB_OUTPUT
         id: iac-scanner
@@ -49,7 +49,7 @@ jobs:
 
 
       - name: IaC Scan Echoer
-        run: echo ${{ steps.iac-scanner.scan_output }}
+        run: echo ${{ steps.iac-scanner.outputs.scan_output }}
 
       - name: Check for failures
         if: steps.secret-detector.outcome == 'failure' || steps.iac-scanner.outcome == 'failure'
