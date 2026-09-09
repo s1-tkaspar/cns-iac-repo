@@ -53,7 +53,7 @@ jobs:
       - name: IaC Scan Echoer
         shell: bash
         run: |
-             RESULT=${{ steps.iac-scanner.outputs.scan_output }}
+             RESULT="${{ steps.iac-scanner.outputs.scan_output }}"
              echo "${RESULT}"
 
       - name: Check for failures
